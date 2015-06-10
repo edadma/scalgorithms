@@ -1,4 +1,4 @@
-package scalgorithms
+package ca.hyperreal.scalgorithms
 
 
 class MachineFloat( val a: Double ) extends OrderedField[MachineFloat]

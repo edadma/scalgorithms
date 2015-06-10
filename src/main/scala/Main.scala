@@ -1,13 +1,13 @@
-package scalgorithms
+package ca.hyperreal.scalgorithms
 
 import util._
-import scalgorithms.Matrices._
-import scalgorithms.Integers._
-import scalgorithms.Algorithms._
-import scalgorithms.Standard._
+import Matrices._
+import Integers._
+import Algorithms._
+import Standard._
 
 
-object Test extends App
+object Main extends App
 {
 //	val r = new Random
 //	

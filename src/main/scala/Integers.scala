@@ -1,4 +1,4 @@
-package scalgorithms
+package ca.hyperreal.scalgorithms
 
 import math._
 

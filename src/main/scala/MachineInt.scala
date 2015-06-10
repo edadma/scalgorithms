@@ -1,4 +1,4 @@
-package scalgorithms
+package ca.hyperreal.scalgorithms
 
 
 class MachineInt( val a: Long ) extends OrderedRing[MachineInt]

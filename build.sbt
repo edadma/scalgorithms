@@ -11,6 +11,8 @@ scalacOptions ++= Seq( "-deprecation", "-feature", "-language:postfixOps", "-lan
 
 incOptions := incOptions.value.withNameHashing( true )
 
+isSnapshot := true
+
 organization := "ca.hyperreal"
 
 //resolvers += Resolver.sonatypeRepo( "snapshots" )
@@ -23,11 +25,11 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.1" % "test"
 
 libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.11.5" % "test"
 
-mainClass in (Compile, run) := Some( "scalgorithms.Test" )
+mainClass in (Compile, run) := Some( "ca.hyperreal." + name.value + ".Main" )
 
 assemblySettings
 
-mainClass in assembly := Some( "ca.hyperreal.sscheme.Main" )
+mainClass in assembly := Some( "ca.hyperreal." + name.value + ".Main" )
 
 jarName in assembly := name.value + "-" + version.value + ".jar"
 
@@ -41,12 +43,12 @@ pomIncludeRepository := { _ => false }
 
 licenses := Seq("MIT" -> url("http://opensource.org/licenses/MIT"))
 
-homepage := Some(url("https://github.com/edadma/sscheme"))
+homepage := Some(url("https://github.com/edadma/" + name.value))
 
 pomExtra := (
   <scm>
-    <url>git@github.com:edadma/sscheme.git</url>
-    <connection>scm:git:git@github.com:edadma/sscheme.git</connection>
+    <url>git@github.com:edadma/{name.value}.git</url>
+    <connection>scm:git:git@github.com:edadma/{name.value}.git</connection>
   </scm>
   <developers>
     <developer>

@@ -1,6 +1,6 @@
-package scalgorithms
+package ca.hyperreal.scalgorithms
 
-import scalgorithms.Integers._
+import Integers._
 
 
 trait Group[T]

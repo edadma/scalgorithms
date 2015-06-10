@@ -1,4 +1,4 @@
-package scalgorithms
+package ca.hyperreal.scalgorithms
 
 
 class ZZ( val a: BigInt ) extends OrderedRing[ZZ]

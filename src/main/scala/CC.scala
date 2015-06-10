@@ -1,6 +1,6 @@
-package scalgorithms
+package ca.hyperreal.scalgorithms
 
-import scalgorithms.Integers._
+import Integers._
 
 
 class CC[R <: OrderedRing[R]]( val a: R, val b: R ) extends Field[CC[R]]
