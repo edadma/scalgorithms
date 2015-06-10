@@ -1,5 +1,7 @@
 package ca.hyperreal.scalgorithms
 
+import math._
+
 
 object Matrices
 {	

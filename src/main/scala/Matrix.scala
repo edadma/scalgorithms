@@ -1,7 +1,7 @@
 package ca.hyperreal.scalgorithms
 
 import collection.mutable._
-import math._
+//import math._
 import scala.reflect.ClassTag
 
 
@@ -41,7 +41,7 @@ abstract class Matrix[R <: Ring[R]] extends ((Int, Int) => R)	with (Matrix[R] =>
 	val cols: Int
 	
 	if (rows <= 0 || cols <= 0)
-		throw new Exception( "Matrix: number of rows and columns must be positive" )
+		sys.error( "Matrix: number of rows and columns must be positive" )
 		
 	/**
 	Returns a matrix containing the result of some operation on <tt>this</tt> matrix, where the value
@@ -55,7 +55,7 @@ abstract class Matrix[R <: Ring[R]] extends ((Int, Int) => R)	with (Matrix[R] =>
 	def +( that: Matrix[R] ) =
 	{
 		if (rows != that.rows || cols != that.cols)
-			throw new Exception( "+: matrices cannot be added" )
+			sys.error( "+: matrices cannot be added" )
 			
 		operation( (i, j) => this(i, j) + that(i, j) )
 	}
@@ -63,7 +63,7 @@ abstract class Matrix[R <: Ring[R]] extends ((Int, Int) => R)	with (Matrix[R] =>
 	def *( that: Matrix[R] ) =
 	{
 		if (cols != that.rows)
-			throw new Exception( "*: matrices cannot be multiplied" )
+			sys.error( "*: matrices cannot be multiplied" )
 			
 		operation( rows, that.cols, (i, j) => rowView(i) dot that.columnView(j) )
 	}
@@ -82,14 +82,13 @@ abstract class Matrix[R <: Ring[R]] extends ((Int, Int) => R)	with (Matrix[R] =>
 
 	def dot( that: Matrix[R] ) =
 	{
-		if (!isRow && !isColumn || !that.isRow && !that.isColumn)
-			throw new Exception( "dot: expected row or column matrices" )
-			
+		require( (isRow || isColumn) && (that.isRow || that.isColumn), "dot: expected row or column matrices" )
+		
 	val l = toList
 	val r = that.toList
 	
 		if (l.length != r.length)
-			throw new Exception( "dot: matrices must have the same number of elements" )
+			sys.error( "dot: matrices must have the same number of elements" )
 		
 		(l zip r) map (p => p._1*p._2.conj) reduceLeft (_ + _)
 	}
@@ -134,7 +133,7 @@ abstract class Matrix[R <: Ring[R]] extends ((Int, Int) => R)	with (Matrix[R] =>
 	def drop( row: Int, col: Int ) =
 	{
 		if (isRow || isColumn)
-			throw new Exception( "drop: can't drop from a row or column matrix" )
+			sys.error( "drop: can't drop from a row or column matrix" )
 		
 		operation( rows - 1, cols - 1, dropFunc(row, col, _, _) )
 	}
@@ -142,7 +141,7 @@ abstract class Matrix[R <: Ring[R]] extends ((Int, Int) => R)	with (Matrix[R] =>
 	def det: R =
 	{
 		if (!isSquare)
-			throw new Exception( "det: need square matrix" )
+			sys.error( "det: need square matrix" )
 			
 		rows match
 		{
@@ -233,7 +232,7 @@ abstract class Matrix[R <: Ring[R]] extends ((Int, Int) => R)	with (Matrix[R] =>
 	def diagonal: List[R] =
 	{
 		if (!isSquare)
-			throw new Exception( "diagonal: need square matrix" )
+			sys.error( "diagonal: need square matrix" )
 			
 		(for (i <- 1 to rows) yield this( i, i )).toList
 	}
@@ -296,7 +295,7 @@ abstract class Matrix[R <: Ring[R]] extends ((Int, Int) => R)	with (Matrix[R] =>
 	final def aspect( rows: Int, cols: Int, f: (Int, Int) => R ): Matrix[R] =
 	{
 		if (rows < 1 || rows > this.rows || cols < 1 || cols > this.cols)
-			throw new Exception( "aspect out of bounds" )
+			sys.error( "aspect out of bounds" )
 			
 		new ViewMatrix[R]( rows, cols, f )
 	}
@@ -311,7 +310,7 @@ abstract class Matrix[R <: Ring[R]] extends ((Int, Int) => R)	with (Matrix[R] =>
 	final def dropView( row: Int, col: Int ) =
 	{
 		if (isRow || isColumn)
-			throw new Exception( "drop: can't drop from a row or column matrix" )
+			sys.error( "drop: can't drop from a row or column matrix" )
 		
 		aspect( rows - 1, cols - 1, dropFunc(row, col, _, _) )
 	}
@@ -376,10 +375,10 @@ object Matrix
 				m = new ConcreteMatrix[R]( data.length, cols )
 			}
 			else if (cols != r.length)
-				throw new Exception( "row lists must all be the same length" )
+				sys.error( "row lists must all be the same length" )
 				
 			if (cols == 0)
-				throw new Exception( "row list cannot be empty" )
+				sys.error( "row list cannot be empty" )
 				
 		var j = 0
 		
@@ -422,6 +421,13 @@ object Matrix
 	def column[R <: Ring[R]]( rs: R* )( implicit tag: ClassTag[R] ) = Matrix[R]( rs.length, rs: _* )
 	
 	def row[R <: Ring[R]]( rs: R* )( implicit tag: ClassTag[R] ) = Matrix[R]( 1, rs: _* )
+	
+	def norm( m: Matrix[MachineFloat] ) =
+	{
+		require( m.isRow || m.isColumn, "dot: expected row or column matrix" )
+		
+		math.sqrt( m.toList.map(e => e*e).reduceLeft(_ + _).a )
+	}
 }
 
 class ScalarMatrix[R <: Ring[R]]( size: Int, c: R )( implicit conv: Int => R ) extends Matrix[R]
@@ -440,7 +446,7 @@ class DiagonalMatrix[R <: Ring[R]]( ds: R* )( implicit conv: Int => R ) extends 
 	val cols = rows
 	
 	if (ds.length == 0)
-		throw new Exception( "DiagonalMatrix: diagonal must have at least one element" )
+		sys.error( "DiagonalMatrix: diagonal must have at least one element" )
 	
 	private val z = conv( 0 )
 		
@@ -461,7 +467,7 @@ class ConcreteMatrix[R <: Ring[R]]( val rows: Int, val cols: Int )( implicit tag
 		this( rows, data.length/rows )
 		
 		if (data.length % rows != 0)
-			throw new Exception( "data length must be a multiple of rows" )
+			sys.error( "data length must be a multiple of rows" )
 	
 		copyToArray( data.iterator, array )
 	}
@@ -509,7 +515,7 @@ class DotProductMatrix[R <: Ring[R]]( ms: Matrix[R]* ) extends ViewMatrix[R]( ms
 class BatchMatrix[R <: Ring[R]]( ms: Matrix[R]* ) extends Matrix[R]
 {
 		if (ms.length == 0)
-			throw new Exception( "columns: expected at least one row or column matrix" )
+			sys.error( "columns: expected at least one row or column matrix" )
 		
 	private val rows_ = ms.head.rows
 	private val cols_ = ms.head.cols
@@ -517,13 +523,13 @@ class BatchMatrix[R <: Ring[R]]( ms: Matrix[R]* ) extends Matrix[R]
 		for (m <- ms)
 		{
 			if (m.isRow && m.isColumn)
-				throw new Exception( "BatchMatrix: component matrices must have more than one entry" )
+				sys.error( "BatchMatrix: component matrices must have more than one entry" )
 			
 			if (!m.isRow && !m.isColumn)
-				throw new Exception( "BatchMatrix: expected only row or column matrices" )
+				sys.error( "BatchMatrix: expected only row or column matrices" )
 				
 			if (m.rows != rows_ || m.cols != cols_)
-				throw new Exception( "BatchMatrix: all component matrices must have the same size" )
+				sys.error( "BatchMatrix: all component matrices must have the same size" )
 		}
 		
 	val rows =
